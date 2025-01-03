@@ -1,11 +1,13 @@
 import { Channel } from '../types/channel';
 
-// Use relative path since we're deploying to the same domain
 const API_URL = '/api/channels';
+const RETRY_DELAY = 3000; // 3 seconds
 
 export class ChannelService {
   private static instance: ChannelService;
   private channels: Channel[] = [];
+  private retryCount = 0;
+  private maxRetries = 3;
 
   private constructor() {}
 
@@ -29,10 +31,21 @@ export class ChannelService {
       }
       
       this.channels = data;
+      this.retryCount = 0; // Reset retry count on success
       return this.channels;
     } catch (error) {
       console.error('Failed to fetch channels:', error);
-      return [];
+      
+      if (this.retryCount < this.maxRetries) {
+        this.retryCount++;
+        console.log(`Retrying (${this.retryCount}/${this.maxRetries})...`);
+        
+        // Wait before retrying
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        return this.getChannels();
+      }
+      
+      throw error;
     }
   }
 }

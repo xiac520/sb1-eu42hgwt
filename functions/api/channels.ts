@@ -1,5 +1,9 @@
 import { parseM3U } from '../../src/utils/m3uParser';
-import { CONFIG } from '../../worker/config';
+
+const IPV6_URL = 'https://live.zbds.top/tv/iptv6.m3u';
+const IPV4_URL = 'https://live.zbds.top/tv/iptv4.m3u';
+const CACHE_KEY = 'channels';
+const CACHE_TTL = 86400; // 24 hours
 
 export async function onRequest(context) {
   const { env } = context;
@@ -11,46 +15,47 @@ export async function onRequest(context) {
 
   try {
     // Try to get from cache first
-    const cached = await env.CHANNELS.get(CONFIG.CACHE_KEY);
+    const cached = await env.CHANNELS.get(CACHE_KEY);
     if (cached) {
       return new Response(cached, { headers });
     }
 
-    // If not in cache, fetch from IPv6 first
-    const ipv6Response = await fetch(CONFIG.IPV6_URL);
-    if (ipv6Response.ok) {
-      const channelList = parseM3U(await ipv6Response.text());
-      const jsonData = JSON.stringify(channelList);
-      
-      // Cache the results
-      await env.CHANNELS.put(CONFIG.CACHE_KEY, jsonData, {
-        expirationTtl: CONFIG.CACHE_TTL
-      });
-      
-      return new Response(jsonData, { headers });
-    }
-
-    // Fallback to IPv4
-    const ipv4Response = await fetch(CONFIG.IPV4_URL);
-    if (!ipv4Response.ok) {
-      throw new Error('Both IPv6 and IPv4 fetches failed');
-    }
-
-    const channelList = parseM3U(await ipv4Response.text());
-    const jsonData = JSON.stringify(channelList);
+    // If not in cache, fetch and cache the data
+    const channels = await fetchChannels();
+    const jsonData = JSON.stringify(channels);
     
-    await env.CHANNELS.put(CONFIG.CACHE_KEY, jsonData, {
-      expirationTtl: CONFIG.CACHE_TTL
+    // Cache the results
+    await env.CHANNELS.put(CACHE_KEY, jsonData, {
+      expirationTtl: CACHE_TTL
     });
-
+    
     return new Response(jsonData, { headers });
   } catch (error) {
     return new Response(
       JSON.stringify({ error: 'Failed to fetch channels' }), 
-      { 
-        status: 500,
-        headers 
-      }
+      { status: 500, headers }
     );
   }
+}
+
+async function fetchChannels() {
+  // Try IPv6 first
+  try {
+    const response = await fetch(IPV6_URL);
+    if (response.ok) {
+      const text = await response.text();
+      return parseM3U(text);
+    }
+  } catch (error) {
+    console.error('IPv6 fetch failed:', error);
+  }
+
+  // Fallback to IPv4
+  const response = await fetch(IPV4_URL);
+  if (!response.ok) {
+    throw new Error('Both IPv6 and IPv4 fetches failed');
+  }
+
+  const text = await response.text();
+  return parseM3U(text);
 }
