@@ -27,7 +27,15 @@ export default function App() {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white">{error}</div>
+        <div className="text-white text-center">
+          <p className="mb-4">加载频道列表失败</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 transition-colors"
+          >
+            重试
+          </button>
+        </div>
       </div>
     );
   }

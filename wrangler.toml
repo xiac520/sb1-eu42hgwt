@@ -2,7 +2,9 @@ name = "tv-channels-worker"
 main = "worker/index.ts"
 compatibility_date = "2024-01-01"
 
-[vars]
-CACHE_KEY = "tv_channels_cache"
-IPV6_URL = "https://live.zbds.top/tv/iptv6.m3u"
-IPV4_URL = "https://live.zbds.top/tv/iptv4.m3u"
+kv_namespaces = [
+  { binding = "CHANNELS", id = "0eb71c2d219a4fef87749e14ee4f71f3" }
+]
+
+[triggers]
+crons = ["0 3 * * *"]
