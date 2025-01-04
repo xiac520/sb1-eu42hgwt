@@ -4,17 +4,8 @@ compatibility_date = "2023-01-01"
 [build]
 command = "npm run build"
 
-[build.upload]
-format = "service-worker"
-
 [site]
-bucket = ".next/standalone"
-entry-point = "."
+bucket = ".next"
 
-[build.environment]
-NODE_VERSION = "18.17.1"
-
-# Configure build output directory
-[pages_build_output_dir]
-value = ".next/standalone"
+pages_build_output_dir = ".next"
 
