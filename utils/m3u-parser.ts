@@ -27,6 +27,9 @@ export async function parseTXT(url: string): Promise<Channel[]> {
   return channels
 }
 
+// Alias parseTXT as parseM3U for backward compatibility
+export const parseM3U = parseTXT
+
 export function isValidStreamingUrl(url: string): boolean {
   return url.startsWith('http') || url.startsWith('https') || url.includes('://')
 }
