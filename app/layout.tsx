@@ -1,18 +1,13 @@
+import './globals.css'
+import { Inter } from 'next/font/google'
 import { ThemeProvider } from "@/components/theme-provider"
-import { Metadata } from 'next'
+import Navbar from '@/components/Navbar'
 
-export const metadata: Metadata = {
-  title: '云上世界 - 您的在线IPTV直播平台',
-  description: '云上世界为您提供高质量的IPTV直播服务，包括多个频道和节目。随时随地观看您喜爱的电视节目。',
-  keywords: 'IPTV, 直播, 电视, 在线观看, 云上世界',
-  openGraph: {
-    title: '云上世界 - 您的在线IPTV直播平台',
-    description: '云上世界为您提供高质量的IPTV直播服务，包括多个频道和节目。随时随地观看您喜爱的电视节目。',
-    url: 'https://iptv.dnscron.com',
-    siteName: '云上世界',
-    locale: 'zh_CN',
-    type: 'website',
-  },
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata = {
+  title: '云上直播',
+  description: '免费IPTV直播源聚合平台',
 }
 
 export default function RootLayout({
@@ -22,21 +17,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN" suppressHydrationWarning>
-      <head />
-      <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
+      <body className={inter.className}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          <div className="flex flex-col h-screen">
+            <Navbar />
+            <div className="flex-1 overflow-hidden">
+              {children}
+            </div>
+          </div>
         </ThemeProvider>
       </body>
     </html>
   )
 }
 
-
-
-import './globals.css'

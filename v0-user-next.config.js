@@ -1,32 +1,24 @@
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-})
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  assetPrefix: 'https://cdn.dnscron.com',
+  swcMinify: true,
   images: {
-    domains: ['cdn.dnscron.com'],
-    loader: 'custom',
-    loaderFile: './lib/imageLoader.js',
+    unoptimized: true
   },
   experimental: {
-    h2: true
+    optimizeCss: true
   },
-  compress: true,
-  headers: async () => [
-    {
-      source: '/(.*)',
-      headers: [
-        {
-          key: 'Cache-Control',
-          value: 'public, max-age=31536000, immutable',
-        },
-      ],
-    },
-  ],
+  webpack: (config, { isServer }) => {
+    // Cloudflare Workers 不支持 node:crypto
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        crypto: false
+      }
+    }
+    return config
+  }
 }
 
-module.exports = withBundleAnalyzer(nextConfig)
+module.exports = nextConfig
 
