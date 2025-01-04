@@ -1,0 +1,13 @@
+name = "iptv-streaming"
+compatibility_date = "2023-01-01"
+
+[build]
+command = "npm run build"
+output_directory = ".next"
+
+[build.environment]
+NODE_VERSION = "18.17.1"
+
+[site]
+bucket = ".next"
+
