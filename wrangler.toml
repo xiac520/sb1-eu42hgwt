@@ -1,11 +1,7 @@
 name = "iptv-streaming"
 compatibility_date = "2023-01-01"
+pages_build_output_dir = ".next"
 
 [build]
 command = "npm run build"
-
-[site]
-bucket = ".next"
-
-pages_build_output_dir = ".next"
 
